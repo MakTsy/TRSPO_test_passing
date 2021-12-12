@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-test-passing
+spec:
+  selector:
+    app: service-test-passing
+  type: NodePort
+  ports:
+    - name: http
+      port: 8081
+      nodePort: 31001
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-test-passing
+spec:
+  selector:
+    matchLabels:
+      app: service-test-passing
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: service-test-passing
+    spec:
+      containers:
+        - name: server
+          image: maktsy/service-test-passing
+          env:
+            - name: POSTGRES_HOST
+              value: postgres-test-passing
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DATABASE
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: mynewpassword
+          ports:
+            - name: http
+              containerPort: 8081
+
+---
